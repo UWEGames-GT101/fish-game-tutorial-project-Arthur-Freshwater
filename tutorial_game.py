@@ -20,7 +20,7 @@ class MyASGEGame(pyasge.ASGEGame):
             settings (pyasge.GameSettings): The game settings
         """
         pyasge.ASGEGame.__init__(self, settings)
-        self.renderer.setClearColour(pyasge.COLOURS.CORNFLOWER)
+        self.renderer.setClearColour(pyasge.COLOURS.BLACK)
 
         # create a game data object, we can store all shared game content here
         self.data = GameData()
@@ -55,7 +55,12 @@ class MyASGEGame(pyasge.ASGEGame):
         self.initFish()
 
     def initBackground(self) -> bool:
-        pass
+        if self.data.background.loadTexture("/data/images/background.png"):
+            # loaded, so make sure this gets rendered first
+            self.data.background.z_order = -100
+            return True
+        else:
+            return False
 
     def initFish(self) -> bool:
         pass
@@ -64,7 +69,25 @@ class MyASGEGame(pyasge.ASGEGame):
         pass
 
     def initMenu(self) -> bool:
-        pass
+        self.data.fonts["MainFont"] = self.data.renderer.loadFont("/data/fonts/KGHAPPY.ttf", 64)
+        self.menu_text = pyasge.Text(self.data.fonts["MainFont"])
+        self.menu_text.string = "The Fish Game"
+        self.menu_text.position = [100, 100]
+        self.menu_text.colour = pyasge.COLOURS.HOTPINK
+
+        # This option starts the game
+        self.play_option = pyasge.Text(self.data.fonts["MainFont"])
+        self.play_option.string = ">START"
+        self.play_option.position = [100, 400]
+        self.play_option.colour = pyasge.COLOURS.HOTPINK
+
+        # This option exits the games
+        self.exit_option = pyasge.Text(self.data.fonts["MainFont"])
+        self.exit_option.string = "EXIT"
+        self.exit_option.position = [500, 400]
+        self.exit_option.colour = pyasge.COLOURS.LIGHTSLATEGRAY
+
+        return True
 
     def clickHandler(self, event: pyasge.ClickEvent) -> None:
         pass
@@ -94,7 +117,11 @@ class MyASGEGame(pyasge.ASGEGame):
 
         if self.menu:
             # render the menu here
-            pass
+            self.data.renderer.render(self.data.background)
+            self.data.renderer.render(self.menu_text)
+
+            self.data.renderer.render(self.play_option)
+            self.data.renderer.render(self.exit_option)
         else:
             # render the game here
             pass
